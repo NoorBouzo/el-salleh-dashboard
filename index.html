@@ -52,6 +52,10 @@ canvas{max-height:300px}
   <div class="panel"><h3>توزيع السعر (ل.س)</h3><canvas id="distChart"></canvas></div>
   <div class="panel"><h3>المتاجر</h3><table id="storeTbl"><thead><tr><th>المتجر</th><th>عدد المنتجات</th><th>متوسط السعر</th><th>وسيط السعر</th></tr></thead><tbody></tbody></table></div>
 </div>
+<div id="exSection" style="display:none">
+<h2>المنتجات المستبعدة (أسعار خاطئة)</h2>
+<div class="panel"><table id="exTbl"><thead><tr><th>المتجر</th><th>المنتج</th><th>الماركة</th><th>السعر (ل.س)</th></tr></thead><tbody></tbody></table></div>
+</div>
 <h2>ملاحظات ونطاق البيانات</h2>
 <div class="note">
 <b>قيود مهمة للقراءة الصحيحة:</b>
@@ -66,7 +70,7 @@ canvas{max-height:300px}
 <footer>تم التوليد تلقائياً • El-Salleh Analytics • يتحدّث كل 3 أيام</footer>
 </div>
 <script>
-const DATA = {"kpi": {"rows": 98, "products": 97, "stores": 2, "cats": 3, "subcats": 13, "brands": 7, "avg": "30,218", "median": "15,540", "pmin": "980", "pmax": "756,000", "disc": 0, "disc_pct": 0.0, "outliers": 16}, "cat": {"labels": ["المنتجات الغذائية", "المشروبات", "سناكات و تسالي"], "values": [89, 6, 3]}, "brand": {"labels": ["الشيف نديم", "ديلو فود", "العبور", "البرج الفضي", "الراقي", "حسين الناصر", "سيريان غورميه"], "values": [89, 3, 2, 1, 1, 1, 1]}, "dist": {"labels": ["<5K", "5–10K", "10–25K", "25–50K", "50–100K", "100K+"], "values": [2, 18, 45, 12, 3, 2]}, "store": [{"name": "متجر الدخانية", "n": 90, "avg": "29,676", "med": "15,540"}, {"name": "متجر أبو رمانة", "n": 8, "avg": "51,870", "med": "51,870"}], "updated": "2026-10-22 01:42"};
+const DATA = {"kpi": {"rows": 98, "products": 97, "stores": 2, "cats": 3, "subcats": 13, "brands": 7, "avg": "30,218", "median": "15,540", "pmin": "980", "pmax": "756,000", "disc": 0, "disc_pct": 0.0, "outliers": 16}, "cat": {"labels": ["المنتجات الغذائية", "المشروبات", "سناكات و تسالي"], "values": [89, 6, 3]}, "brand": {"labels": ["الشيف نديم", "ديلو فود", "العبور", "البرج الفضي", "الراقي", "حسين الناصر", "سيريان غورميه"], "values": [89, 3, 2, 1, 1, 1, 1]}, "dist": {"labels": ["<5K", "5–10K", "10–25K", "25–50K", "50–100K", "100K+"], "values": [2, 18, 45, 12, 3, 2]}, "store": [{"name": "متجر الدخانية", "n": 90, "avg": "29,676", "med": "15,540"}, {"name": "متجر أبو رمانة", "n": 8, "avg": "51,870", "med": "51,870"}], "excluded": [{"store": "متجر أبو رمانة", "name": "تمر هندى ماركة البرج الفضى", "brand": "البرج الفضي", "price": "1,988,000"}, {"store": "متجر أبو رمانة", "name": "بابريكا مدخنة ديلوفود", "brand": "ديلو فود", "price": "4,441,500"}, {"store": "متجر أبو رمانة", "name": "خردل", "brand": "ديلو فود", "price": "1,644,300"}, {"store": "متجر أبو رمانة", "name": "صلصة بيتزا ديلوفود", "brand": "ديلو فود", "price": "1,719,900"}, {"store": "متجر أبو رمانة", "name": "ورق عنب", "brand": "الراقي", "price": "5,024,320"}, {"store": "متجر أبو رمانة", "name": "ورق عنب", "brand": "سيريان غورميه", "price": "8,400,000"}, {"store": "متجر الدخانية", "name": "الشيف نديم برغل خشن", "brand": "الشيف نديم", "price": "1,474,200"}, {"store": "متجر الدخانية", "name": "الشيف نديم مخلل فليفلة يونانية", "brand": "الشيف نديم", "price": "1,946,700"}, {"store": "متجر الدخانية", "name": "الشيف نديم مخلل لفت", "brand": "الشيف نديم", "price": "1,946,700"}, {"store": "متجر الدخانية", "name": "الشيف نديم مخلل مشكل ٦٦٠ غ", "brand": "الشيف نديم", "price": "1,946,700"}, {"store": "متجر الدخانية", "name": "الشيف نديم معكرونة بوري 1 كغ", "brand": "الشيف نديم", "price": "1,663,200"}, {"store": "متجر الدخانية", "name": "الشيف نديم معكرونة كوع كبير 1 كغ", "brand": "الشيف نديم", "price": "1,663,200"}, {"store": "متجر الدخانية", "name": "برغل آلي احمر ناعم", "brand": "الشيف نديم", "price": "1,474,200"}, {"store": "متجر الدخانية", "name": "دبس رمان الشيف نديم", "brand": "الشيف نديم", "price": "2,003,400"}, {"store": "متجر الدخانية", "name": "فاصولياء عريضة (كلوي) الشيف نديم", "brand": "الشيف نديم", "price": "3,931,200"}, {"store": "متجر الدخانية", "name": "كريمة مرة الشيف نديم", "brand": "الشيف نديم", "price": "3,742,200"}], "updated": "2026-10-22 01:46"};
 document.getElementById('upd').textContent = DATA.updated;
 const k = DATA.kpi;
 const cards = [
@@ -87,6 +91,11 @@ new Chart(brandChart,{type:'doughnut',data:{labels:DATA.brand.labels,datasets:[{
 new Chart(distChart,{type:'bar',data:{labels:DATA.dist.labels,datasets:[{data:DATA.dist.values,backgroundColor:ORANGE,borderRadius:6}]},options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}});
 document.querySelector('#storeTbl tbody').innerHTML = DATA.store.map(s=>
  `<tr><td>${s.name}</td><td>${s.n}</td><td>${s.avg}</td><td>${s.med}</td></tr>`).join('');
+if(DATA.excluded && DATA.excluded.length){
+  document.getElementById('exSection').style.display='block';
+  document.querySelector('#exTbl tbody').innerHTML = DATA.excluded.map(e=>
+   `<tr><td>${e.store}</td><td>${e.name}</td><td>${e.brand}</td><td>${e.price}</td></tr>`).join('');
+}
 </script>
 </body>
 </html>

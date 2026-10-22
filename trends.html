@@ -1,0 +1,70 @@
+<!doctype html><html lang="ar" dir="rtl"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>El-Salleh — اتجاهات الأسعار</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{--dark:#4B2FA6;--primary:#7B4FF0;--accent:#2BC48A;--light:#EFEAFD;--bg:#F6F4FC;--card:#fff;--txt:#241A3B;--muted:#6B6480;--up:#C0392B;--down:#2B9E6B;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--txt);line-height:1.6;padding:0 16px 48px}
+header{background:linear-gradient(135deg,var(--dark),var(--primary));color:#fff;padding:28px 24px;border-radius:0 0 20px 20px;margin:0 -16px 24px}
+.wrap{max-width:1100px;margin:0 auto}.hdr{display:flex;align-items:center;gap:18px}
+.logo{width:68px;height:68px;border-radius:16px;background:#fff;padding:5px;box-shadow:0 4px 14px rgba(0,0,0,.18);flex-shrink:0}
+header h1{font-size:25px;font-weight:800}header p{opacity:.9;font-size:14px}
+.nav{margin-top:10px}.nav a{color:#fff;background:rgba(255,255,255,.18);padding:5px 14px;border-radius:999px;text-decoration:none;font-size:13px}
+h2{font-size:19px;margin:28px 0 14px;color:var(--dark);font-weight:700;border-right:4px solid var(--accent);padding-right:10px}
+.panel{background:var(--card);border-radius:14px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,.05)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
+.grid .panel h3{font-size:14px;margin-bottom:10px;color:var(--dark)}
+table{width:100%;border-collapse:collapse;font-size:14px}th{background:var(--dark);color:#fff;padding:10px}
+td{padding:9px 10px;text-align:center;border-bottom:1px solid #EEE9FB}tr:nth-child(even) td{background:var(--light)}
+.up{color:var(--up);font-weight:800}.down{color:var(--down);font-weight:800}.flat{color:var(--muted)}
+.info{background:#EEF6FF;border:1px solid #CCE0F5;border-radius:12px;padding:14px 18px;margin:10px 0;font-size:14px}
+footer{text-align:center;color:var(--muted);font-size:12px;margin-top:30px}
+canvas{max-height:300px}
+</style></head><body>
+<header><div class="wrap hdr">
+<img class="logo" src="data:image/png;base64,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" alt="El-Salleh">
+<div><h1>El-Salleh — اتجاهات الأسعار</h1>
+<p>تغيّر متوسط سعر كل ماركة عبر السحبات (كل 3 أيام) — الأسعار الشاذة مستبعدة</p>
+<div class="nav"><a href="index.html">← لوحة التحليلات</a></div></div>
+</div></header>
+<div class="wrap">
+<div class="info" id="info"></div>
+<h2>اتجاه الأسعار — كل الماركات</h2>
+<div class="panel"><canvas id="allChart"></canvas></div>
+<h2>آخر تغيّر لكل ماركة</h2>
+<div class="panel"><table id="chgTbl"><thead><tr><th>الماركة</th><th>السحبة السابقة</th><th>آخر سحبة</th><th>التغيّر %</th></tr></thead><tbody></tbody></table></div>
+<h2>اتجاه كل ماركة على حدة</h2>
+<div class="grid" id="miniGrid"></div>
+<footer>تم التوليد تلقائياً • El-Salleh Price Trends • يتحدّث كل 3 أيام</footer>
+</div>
+<script>
+const D={"dates": ["2026-10-22"], "brands": ["الشيف نديم", "العبور", "حسين الناصر"], "series": {"الشيف نديم": [18669], "العبور": [17850], "حسين الناصر": [93800]}, "change": [{"brand": "الشيف نديم", "last": 18669, "prev": null, "pct": null}, {"brand": "العبور", "last": 17850, "prev": null, "pct": null}, {"brand": "حسين الناصر", "last": 93800, "prev": null, "pct": null}], "updated": "2026-10-22 05:20", "n": 1};
+const PALE=['#7B4FF0','#4B2FA6','#2BC48A','#E67E22','#C0392B','#2980B9','#8E44AD','#16A085','#D35400','#7F8C8D'];
+Chart.defaults.font.family="'Cairo',sans-serif";
+document.getElementById('info').textContent =
+  D.n<=1 ? `لحد الآن عندنا سحبة واحدة فقط — الرسوم بتبيّن الاتجاه بعد سحبتين أو أكثر (كل 3 أيام بتنضاف نقطة جديدة لكل ماركة).`
+         : `عدد السحبات: ${D.n} — كل ماركة إلها خط بيبيّن إذا سعرها طلع أو نزل عبر الزمن.`;
+// chart كل الماركات
+new Chart(document.getElementById('allChart'),{type:'line',
+ data:{labels:D.dates,datasets:D.brands.map((b,i)=>({label:b,data:D.series[b],borderColor:PALE[i%PALE.length],
+   backgroundColor:PALE[i%PALE.length],tension:.25,spanGaps:true,pointRadius:4}))},
+ options:{plugins:{legend:{position:'bottom',labels:{boxWidth:12,font:{size:11}}}},scales:{y:{beginAtZero:false,title:{display:true,text:'متوسط السعر (ل.س)'}}}}});
+// جدول التغير
+document.querySelector('#chgTbl tbody').innerHTML = D.change.map(c=>{
+ let cell='<span class="flat">—</span>';
+ if(c.pct!==null){ const cls=c.pct>0?'up':(c.pct<0?'down':'flat'); const ar=c.pct>0?'▲':(c.pct<0?'▼':'■');
+   cell=`<span class="${cls}">${ar} ${Math.abs(c.pct)}%</span>`; }
+ return `<tr><td>${c.brand}</td><td>${c.prev!==null?c.prev.toLocaleString():'—'}</td><td>${c.last.toLocaleString()}</td><td>${cell}</td></tr>`;
+}).join('');
+// mini charts لكل ماركة
+const grid=document.getElementById('miniGrid');
+D.brands.forEach((b,i)=>{
+ const p=document.createElement('div');p.className='panel';
+ p.innerHTML=`<h3>${b}</h3><canvas id="m${i}"></canvas>`;grid.appendChild(p);
+ new Chart(p.querySelector('canvas'),{type:'line',
+  data:{labels:D.dates,datasets:[{data:D.series[b],borderColor:PALE[i%PALE.length],backgroundColor:PALE[i%PALE.length],tension:.25,spanGaps:true,pointRadius:4,fill:false}]},
+  options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:false}}}});
+});
+</script></body></html>

@@ -1,6 +1,7 @@
 *
 !.gitignore
 !index.html
+!trends.html
 !el_salleh_final.xlsx
 !snapshots/
 !snapshots/**

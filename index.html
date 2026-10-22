@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
-:root{--dark:#1F4E46;--primary:#2E8B6F;--accent:#E67E22;--light:#E8F3EF;--bg:#F4F7F6;--card:#fff;--txt:#20302C;--muted:#6B7C77;}
+:root{--dark:#1F4E46;--primary:#2E8B6F;--accent:#E67E22;--light:#E8F3EF;--bg:#F4F7F6;--card:#fff;--txt:#20302C;--muted:#6B7C77;--red:#C0392B;--redbg:#FDECEA;}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--txt);line-height:1.6;padding:0 16px 48px}
 header{background:linear-gradient(135deg,var(--dark),var(--primary));color:#fff;padding:32px 24px;border-radius:0 0 20px 20px;margin:0 -16px 24px}
@@ -16,12 +16,14 @@ header h1{font-size:28px;font-weight:800;margin-bottom:6px}
 header p{opacity:.9;font-size:14px}
 .badge{display:inline-block;background:rgba(255,255,255,.18);padding:4px 12px;border-radius:999px;font-size:13px;margin-top:10px}
 h2{font-size:19px;margin:30px 0 14px;color:var(--dark);font-weight:700;border-right:4px solid var(--accent);padding-right:10px}
+h2.warn{color:var(--red);border-right-color:var(--red)}
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px}
 .kpi{background:var(--card);border-radius:14px;padding:18px;box-shadow:0 2px 10px rgba(0,0,0,.05);border-top:4px solid var(--primary)}
 .kpi .v{font-size:26px;font-weight:800;color:var(--dark)}
 .kpi .u{font-size:12px;color:var(--muted);font-weight:600}
 .kpi .l{font-size:13px;color:var(--muted);margin-top:4px}
 .kpi.alt{border-top-color:var(--accent)}
+.kpi.bad{border-top-color:var(--red)} .kpi.bad .v{color:var(--red)}
 .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px}
 .panel{background:var(--card);border-radius:14px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,.05)}
 .panel h3{font-size:15px;margin-bottom:14px;color:var(--dark)}
@@ -29,6 +31,9 @@ table{width:100%;border-collapse:collapse;font-size:14px}
 th{background:var(--dark);color:#fff;padding:10px;text-align:center}
 td{padding:9px 10px;text-align:center;border-bottom:1px solid #EAF0ED}
 tr:nth-child(even) td{background:var(--light)}
+#exTbl th{background:var(--red)}
+#exTbl td{background:var(--redbg)!important;border-bottom:1px solid #F3D9D6}
+.badprice{color:var(--red);font-weight:800}
 .note{background:#FFF7EC;border:1px solid #F3D9B5;border-radius:12px;padding:16px 18px;margin-top:10px}
 .note b{color:var(--accent)}
 .note ul{margin:8px 20px 0}
@@ -53,8 +58,8 @@ canvas{max-height:300px}
   <div class="panel"><h3>المتاجر</h3><table id="storeTbl"><thead><tr><th>المتجر</th><th>عدد المنتجات</th><th>متوسط السعر</th><th>وسيط السعر</th></tr></thead><tbody></tbody></table></div>
 </div>
 <div id="exSection" style="display:none">
-<h2>المنتجات المستبعدة (أسعار خاطئة)</h2>
-<div class="panel"><table id="exTbl"><thead><tr><th>المتجر</th><th>المنتج</th><th>الماركة</th><th>السعر (ل.س)</th></tr></thead><tbody></tbody></table></div>
+<h2 class="warn">⚠️ توصيات — أسعار شاذة بحاجة لمراجعة</h2>
+<div class="panel"><table id="exTbl"><thead><tr><th>المتجر</th><th>المنتج</th><th>الماركة</th><th>السعر (ل.س)</th><th>التوصية</th></tr></thead><tbody></tbody></table></div>
 </div>
 <h2>ملاحظات ونطاق البيانات</h2>
 <div class="note">
@@ -63,26 +68,25 @@ canvas{max-height:300px}
 <li>الأسعار بالليرة السورية (ل.س). <b id="outnote"></b></li>
 <li><b>الوسيط</b> هو المؤشر الأصدق للسعر (أكثر مقاومة للقيم الشاذة من المتوسط).</li>
 <li>البيانات هي <b>المنتجات المتاحة للزبون</b> عبر الـ API العام فقط — وليست كامل كتالوج الباك-إند.</li>
-<li>التركّز عالٍ: متجر الدخانية وماركة واحدة يشكّلان غالبية المنتجات.</li>
 <li>نسبة التوفّر 100% لأن الـ API لا يُرجع إلا المتوفّر — لا يمكن قياس النفاد الحقيقي.</li>
 </ul>
 </div>
 <footer>تم التوليد تلقائياً • El-Salleh Analytics • يتحدّث كل 3 أيام</footer>
 </div>
 <script>
-const DATA = {"kpi": {"rows": 98, "products": 97, "stores": 2, "cats": 3, "subcats": 13, "brands": 7, "avg": "30,218", "median": "15,540", "pmin": "980", "pmax": "756,000", "disc": 0, "disc_pct": 0.0, "outliers": 16}, "cat": {"labels": ["المنتجات الغذائية", "المشروبات", "سناكات و تسالي"], "values": [89, 6, 3]}, "brand": {"labels": ["الشيف نديم", "ديلو فود", "العبور", "البرج الفضي", "الراقي", "حسين الناصر", "سيريان غورميه"], "values": [89, 3, 2, 1, 1, 1, 1]}, "dist": {"labels": ["<5K", "5–10K", "10–25K", "25–50K", "50–100K", "100K+"], "values": [2, 18, 45, 12, 3, 2]}, "store": [{"name": "متجر الدخانية", "n": 90, "avg": "29,676", "med": "15,540"}, {"name": "متجر أبو رمانة", "n": 8, "avg": "51,870", "med": "51,870"}], "excluded": [{"store": "متجر أبو رمانة", "name": "تمر هندى ماركة البرج الفضى", "brand": "البرج الفضي", "price": "1,988,000"}, {"store": "متجر أبو رمانة", "name": "بابريكا مدخنة ديلوفود", "brand": "ديلو فود", "price": "4,441,500"}, {"store": "متجر أبو رمانة", "name": "خردل", "brand": "ديلو فود", "price": "1,644,300"}, {"store": "متجر أبو رمانة", "name": "صلصة بيتزا ديلوفود", "brand": "ديلو فود", "price": "1,719,900"}, {"store": "متجر أبو رمانة", "name": "ورق عنب", "brand": "الراقي", "price": "5,024,320"}, {"store": "متجر أبو رمانة", "name": "ورق عنب", "brand": "سيريان غورميه", "price": "8,400,000"}, {"store": "متجر الدخانية", "name": "الشيف نديم برغل خشن", "brand": "الشيف نديم", "price": "1,474,200"}, {"store": "متجر الدخانية", "name": "الشيف نديم مخلل فليفلة يونانية", "brand": "الشيف نديم", "price": "1,946,700"}, {"store": "متجر الدخانية", "name": "الشيف نديم مخلل لفت", "brand": "الشيف نديم", "price": "1,946,700"}, {"store": "متجر الدخانية", "name": "الشيف نديم مخلل مشكل ٦٦٠ غ", "brand": "الشيف نديم", "price": "1,946,700"}, {"store": "متجر الدخانية", "name": "الشيف نديم معكرونة بوري 1 كغ", "brand": "الشيف نديم", "price": "1,663,200"}, {"store": "متجر الدخانية", "name": "الشيف نديم معكرونة كوع كبير 1 كغ", "brand": "الشيف نديم", "price": "1,663,200"}, {"store": "متجر الدخانية", "name": "برغل آلي احمر ناعم", "brand": "الشيف نديم", "price": "1,474,200"}, {"store": "متجر الدخانية", "name": "دبس رمان الشيف نديم", "brand": "الشيف نديم", "price": "2,003,400"}, {"store": "متجر الدخانية", "name": "فاصولياء عريضة (كلوي) الشيف نديم", "brand": "الشيف نديم", "price": "3,931,200"}, {"store": "متجر الدخانية", "name": "كريمة مرة الشيف نديم", "brand": "الشيف نديم", "price": "3,742,200"}], "updated": "2026-10-22 01:46"};
+const DATA = {"kpi": {"rows": 98, "products": 97, "stores": 2, "cats": 3, "subcats": 13, "brands": 7, "avg": "19,588", "median": "15,540", "pmin": "980", "pmax": "95,480", "disc": 0, "disc_pct": 0.0, "outliers": 18, "fence": "113,050"}, "cat": {"labels": ["المنتجات الغذائية", "المشروبات", "سناكات و تسالي"], "values": [89, 6, 3]}, "brand": {"labels": ["الشيف نديم", "ديلو فود", "العبور", "البرج الفضي", "الراقي", "حسين الناصر", "سيريان غورميه"], "values": [89, 3, 2, 1, 1, 1, 1]}, "dist": {"labels": ["<5K", "5–10K", "10–25K", "25–50K", "50–100K", "100K+"], "values": [2, 18, 45, 12, 3, 0]}, "store": [{"name": "متجر الدخانية", "n": 90, "avg": "18,760", "med": "15,540"}, {"name": "متجر أبو رمانة", "n": 8, "avg": "51,870", "med": "51,870"}], "excluded": [{"store": "متجر أبو رمانة", "name": "ورق عنب", "brand": "سيريان غورميه", "price": "8,400,000", "rec": "⚠️ سعر شاذ — يُرجى مراجعته (قد يكون خطأ إدخال)"}, {"store": "متجر أبو رمانة", "name": "ورق عنب", "brand": "الراقي", "price": "5,024,320", "rec": "⚠️ سعر شاذ — يُرجى مراجعته (قد يكون خطأ إدخال)"}, {"store": "متجر أبو رمانة", "name": "بابريكا مدخنة ديلوفود", "brand": "ديلو فود", "price": "4,441,500", "rec": "⚠️ سعر شاذ — يُرجى مراجعته (قد يكون خطأ إدخال)"}, {"store": "متجر الدخانية", "name": "فاصولياء عريضة (كلوي) الشيف نديم", "brand": "الشيف نديم", "price": "3,931,200", "rec": "⚠️ سعر شاذ — يُرجى مراجعته (قد يكون خطأ إدخال)"}, {"store": "متجر الدخانية", "name": "كريمة مرة الشيف نديم", "brand": "الشيف نديم", "price": "3,742,200", "rec": "⚠️ سعر شاذ — يُرجى مراجعته (قد يكون خطأ إدخال)"}, {"store": "متجر الدخانية", "name": "دبس رمان الشيف نديم", "brand": "الشيف نديم", "price": "2,003,400", "rec": "⚠️ سعر شاذ — يُرجى مراجعته (قد يكون خطأ إدخال)"}, {"store": "متجر أبو رمانة", "name": "تمر هندى ماركة البرج الفضى", "brand": "البرج الفضي", "price": "1,988,000", "rec": "⚠️ سعر شاذ — يُرجى مراجعته (قد يكون خطأ إدخال)"}, {"store": "متجر الدخانية", "name": "الشيف نديم مخلل لفت", "brand": "الشيف نديم", "price": "1,946,700", "rec": "⚠️ سعر شاذ — يُرجى مراجعته (قد يكون خطأ إدخال)"}, {"store": "متجر الدخانية", "name": "الشيف نديم مخلل مشكل ٦٦٠ غ", "brand": "الشيف نديم", "price": "1,946,700", "rec": "⚠️ سعر شاذ — يُرجى مراجعته (قد يكون خطأ إدخال)"}, {"store": "متجر الدخانية", "name": "الشيف نديم مخلل فليفلة يونانية", "brand": "الشيف نديم", "price": "1,946,700", "rec": "⚠️ سعر شاذ — يُرجى مراجعته (قد يكون خطأ إدخال)"}, {"store": "متجر أبو رمانة", "name": "صلصة بيتزا ديلوفود", "brand": "ديلو فود", "price": "1,719,900", "rec": "⚠️ سعر شاذ — يُرجى مراجعته (قد يكون خطأ إدخال)"}, {"store": "متجر الدخانية", "name": "الشيف نديم معكرونة بوري 1 كغ", "brand": "الشيف نديم", "price": "1,663,200", "rec": "⚠️ سعر شاذ — يُرجى مراجعته (قد يكون خطأ إدخال)"}, {"store": "متجر الدخانية", "name": "الشيف نديم معكرونة كوع كبير 1 كغ", "brand": "الشيف نديم", "price": "1,663,200", "rec": "⚠️ سعر شاذ — يُرجى مراجعته (قد يكون خطأ إدخال)"}, {"store": "متجر أبو رمانة", "name": "خردل", "brand": "ديلو فود", "price": "1,644,300", "rec": "⚠️ سعر شاذ — يُرجى مراجعته (قد يكون خطأ إدخال)"}, {"store": "متجر الدخانية", "name": "الشيف نديم برغل خشن", "brand": "الشيف نديم", "price": "1,474,200", "rec": "⚠️ سعر شاذ — يُرجى مراجعته (قد يكون خطأ إدخال)"}, {"store": "متجر الدخانية", "name": "برغل آلي احمر ناعم", "brand": "الشيف نديم", "price": "1,474,200", "rec": "⚠️ سعر شاذ — يُرجى مراجعته (قد يكون خطأ إدخال)"}, {"store": "متجر الدخانية", "name": "الشيف نديم سباكتي", "brand": "الشيف نديم", "price": "756,000", "rec": "⚠️ سعر شاذ — يُرجى مراجعته (قد يكون خطأ إدخال)"}, {"store": "متجر الدخانية", "name": "الشيف نديم سمنة بقري", "brand": "الشيف نديم", "price": "154,840", "rec": "⚠️ سعر شاذ — يُرجى مراجعته (قد يكون خطأ إدخال)"}], "updated": "2026-10-22 02:18"};
 document.getElementById('upd').textContent = DATA.updated;
 const k = DATA.kpi;
 const cards = [
- ['منتجات فريدة',k.products,'',0],['عدد المتاجر',k.stores,'',0],['عدد الأقسام',k.cats,'',0],
- ['عدد الماركات',k.brands,'',1],['التصنيفات الفرعية',k.subcats,'',1],
- ['وسيط السعر',k.median,'ل.س',0],['متوسط السعر',k.avg,'ل.س',0],
- ['أدنى سعر',k.pmin,'ل.س',0],['أعلى سعر',k.pmax,'ل.س',0],['أسعار مستبعدة (أخطاء)',k.outliers,'',1]
+ ['منتجات فريدة',k.products,'',''],['عدد المتاجر',k.stores,'',''],['عدد الأقسام',k.cats,'',''],
+ ['عدد الماركات',k.brands,'','alt'],['التصنيفات الفرعية',k.subcats,'','alt'],
+ ['وسيط السعر',k.median,'ل.س',''],['متوسط السعر',k.avg,'ل.س',''],
+ ['أدنى سعر',k.pmin,'ل.س',''],['أعلى سعر',k.pmax,'ل.س',''],['أسعار شاذة (مراجعة)',k.outliers,'','bad']
 ];
 document.getElementById('kpis').innerHTML = cards.map(c=>
- `<div class="kpi ${c[3]?'alt':''}"><div class="v">${c[1]} <span class="u">${c[2]}</span></div><div class="l">${c[0]}</div></div>`).join('');
+ `<div class="kpi ${c[3]}"><div class="v">${c[1]} <span class="u">${c[2]}</span></div><div class="l">${c[0]}</div></div>`).join('');
 document.getElementById('outnote').textContent =
- k.outliers>0 ? `تم استبعاد ${k.outliers} منتج بأسعار خاطئة (> مليون ل.س) من حساب المؤشرات.` : '';
+ k.outliers>0 ? `تم رصد ${k.outliers} سعر شاذ (فوق ${k.fence} ل.س) واستُبعد من حساب المؤشرات — شوف قسم التوصيات.` : '';
 const GREEN='#2E8B6F', DARK='#1F4E46', ORANGE='#E67E22';
 const PALE=['#2E8B6F','#1F4E46','#E67E22','#7FB8A3','#C98A4B','#4A6D63','#A3C9BB','#D9A066'];
 Chart.defaults.font.family="'Cairo',sans-serif";
@@ -94,7 +98,7 @@ document.querySelector('#storeTbl tbody').innerHTML = DATA.store.map(s=>
 if(DATA.excluded && DATA.excluded.length){
   document.getElementById('exSection').style.display='block';
   document.querySelector('#exTbl tbody').innerHTML = DATA.excluded.map(e=>
-   `<tr><td>${e.store}</td><td>${e.name}</td><td>${e.brand}</td><td>${e.price}</td></tr>`).join('');
+   `<tr><td>${e.store}</td><td>${e.name}</td><td>${e.brand}</td><td class="badprice">${e.price}</td><td>${e.rec}</td></tr>`).join('');
 }
 </script>
 </body>

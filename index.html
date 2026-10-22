@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>El-Salleh Analytics</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{--dark:#1F4E46;--primary:#2E8B6F;--accent:#E67E22;--light:#E8F3EF;--bg:#F4F7F6;--card:#fff;--txt:#20302C;--muted:#6B7C77;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--txt);line-height:1.6;padding:0 16px 48px}
+header{background:linear-gradient(135deg,var(--dark),var(--primary));color:#fff;padding:32px 24px;border-radius:0 0 20px 20px;margin:0 -16px 24px}
+.wrap{max-width:1100px;margin:0 auto}
+header h1{font-size:28px;font-weight:800;margin-bottom:6px}
+header p{opacity:.9;font-size:14px}
+.badge{display:inline-block;background:rgba(255,255,255,.18);padding:4px 12px;border-radius:999px;font-size:13px;margin-top:10px}
+h2{font-size:19px;margin:30px 0 14px;color:var(--dark);font-weight:700;border-right:4px solid var(--accent);padding-right:10px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px}
+.kpi{background:var(--card);border-radius:14px;padding:18px;box-shadow:0 2px 10px rgba(0,0,0,.05);border-top:4px solid var(--primary)}
+.kpi .v{font-size:30px;font-weight:800;color:var(--dark)}
+.kpi .l{font-size:13px;color:var(--muted);margin-top:4px}
+.kpi.alt{border-top-color:var(--accent)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px}
+.panel{background:var(--card);border-radius:14px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,.05)}
+.panel h3{font-size:15px;margin-bottom:14px;color:var(--dark)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{background:var(--dark);color:#fff;padding:10px;text-align:center}
+td{padding:9px 10px;text-align:center;border-bottom:1px solid #EAF0ED}
+tr:nth-child(even) td{background:var(--light)}
+.note{background:#FFF7EC;border:1px solid #F3D9B5;border-radius:12px;padding:16px 18px;margin-top:10px}
+.note b{color:var(--accent)}
+.note ul{margin:8px 20px 0}
+footer{text-align:center;color:var(--muted);font-size:12px;margin-top:34px}
+canvas{max-height:300px}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+<h1>El-Salleh — لوحة تحليلات</h1>
+<p>تحليل المنتجات والأسعار المتاحة للزبون عبر الـ API العام</p>
+<span class="badge">آخر تحديث: <span id="upd"></span></span>
+</div></header>
+<div class="wrap">
+<h2>المؤشرات الرئيسية (KPIs)</h2>
+<div class="kpis" id="kpis"></div>
+<h2>إحصائيات التطبيق (App Statistics)</h2>
+<div class="grid2">
+  <div class="panel"><h3>المنتجات لكل قسم</h3><canvas id="catChart"></canvas></div>
+  <div class="panel"><h3>المنتجات لكل ماركة</h3><canvas id="brandChart"></canvas></div>
+  <div class="panel"><h3>توزيع السعر</h3><canvas id="distChart"></canvas></div>
+  <div class="panel"><h3>المتاجر</h3><table id="storeTbl"><thead><tr><th>المتجر</th><th>عدد المنتجات</th><th>متوسط السعر</th><th>وسيط السعر</th></tr></thead><tbody></tbody></table></div>
+</div>
+<h2>ملاحظات ونطاق البيانات</h2>
+<div class="note">
+<b>قيود مهمة للقراءة الصحيحة:</b>
+<ul>
+<li>البيانات هي <b>المنتجات المتاحة للزبون</b> عبر الـ API العام فقط — وليست كامل كتالوج الباك-إند.</li>
+<li>التركّز عالٍ: متجر الدخانية وماركة واحدة يشكّلان غالبية المنتجات، فالمتوسطات منحازة.</li>
+<li><b>الوسيط</b> أدق من المتوسط للسعر بسبب وجود قيم غالية شاذة.</li>
+<li>نسبة التوفّر تظهر 100% لأن الـ API لا يُرجع إلا المتوفّر — لا يمكن قياس النفاد الحقيقي.</li>
+</ul>
+</div>
+<footer>تم التوليد تلقائياً • El-Salleh Analytics • يتحدّث كل 3 أيام</footer>
+</div>
+<script>
+const DATA = {"kpi": {"rows": 98, "products": 97, "stores": 2, "cats": 3, "subcats": 13, "brands": 7, "avg": 484567.1, "median": 18690.0, "pmin": 980.0, "pmax": 8400000.0, "disc": 1, "disc_pct": 1.0}, "cat": {"labels": ["المنتجات الغذائية", "المشروبات", "سناكات و تسالي"], "values": [89, 6, 3]}, "brand": {"labels": ["الشيف نديم", "ديلو فود", "العبور", "البرج الفضي", "الراقي", "حسين الناصر", "سيريان غورميه"], "values": [89, 3, 2, 1, 1, 1, 1]}, "dist": {"labels": ["0-25", "25-50", "50-100", "100-200", "200-500", "500+"], "values": [0, 0, 0, 0, 0, 98]}, "store": [{"name": "متجر الدخانية", "n": 90, "avg": 268509.11, "med": 18060.0}, {"name": "متجر أبو رمانة", "n": 8, "avg": 2915220.0, "med": 1853950.0}], "updated": "2026-10-22 00:54"};
+document.getElementById('upd').textContent = DATA.updated;
+const k = DATA.kpi;
+const cards = [
+ ['منتجات فريدة',k.products,0],['عدد المتاجر',k.stores,0],['عدد الأقسام',k.cats,0],
+ ['عدد الماركات',k.brands,1],['التصنيفات الفرعية',k.subcats,1],['متوسط السعر',k.avg,0],
+ ['وسيط السعر',k.median,0],['أدنى سعر',k.pmin,0],['أعلى سعر',k.pmax,0],['نسبة الخصم %',k.disc_pct,1]
+];
+document.getElementById('kpis').innerHTML = cards.map(c=>
+ `<div class="kpi ${c[2]?'alt':''}"><div class="v">${c[1]}</div><div class="l">${c[0]}</div></div>`).join('');
+const GREEN='#2E8B6F', DARK='#1F4E46', ORANGE='#E67E22';
+const PALE=['#2E8B6F','#1F4E46','#E67E22','#7FB8A3','#C98A4B','#4A6D63','#A3C9BB','#D9A066'];
+Chart.defaults.font.family="'Cairo',sans-serif";
+new Chart(catChart,{type:'bar',data:{labels:DATA.cat.labels,datasets:[{data:DATA.cat.values,backgroundColor:GREEN,borderRadius:6}]},options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}});
+new Chart(brandChart,{type:'doughnut',data:{labels:DATA.brand.labels,datasets:[{data:DATA.brand.values,backgroundColor:PALE}]},options:{plugins:{legend:{position:'bottom',labels:{boxWidth:12,font:{size:11}}}}}});
+new Chart(distChart,{type:'bar',data:{labels:DATA.dist.labels,datasets:[{data:DATA.dist.values,backgroundColor:ORANGE,borderRadius:6}]},options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}});
+document.querySelector('#storeTbl tbody').innerHTML = DATA.store.map(s=>
+ `<tr><td>${s.name}</td><td>${s.n}</td><td>${s.avg}</td><td>${s.med}</td></tr>`).join('');
+</script>
+</body>
+</html>
